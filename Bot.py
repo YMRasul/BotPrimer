@@ -4,7 +4,7 @@ from aiogram import types
 
 from BotCreate import dp,bot
 from TableCreate import createTables
-from dbsql import Database
+from dbsql import Database,create_connection
 
 
 async def on_startup(_):
@@ -30,7 +30,7 @@ baz = Database('primer.db')  # из dbsql.py
 @dp.message_handler(commands=['start'])
 async def start(message: types.Message):
     if message.chat.type=='private':
-#        print(message.from_user.id,baz.user_exists(message.from_user.id))
+        print(message.from_user.id,baz.user_exists(message.from_user.id))
         if not baz.user_exists(message.from_user.id):
             baz.add_user(message.from_user.id,message.from_user.full_name)
             await bot.send_message(message.from_user.id,"Tanishganimdan hursandman!")
@@ -41,16 +41,21 @@ async def sendall(message: types.Message):
         if message.from_user.id==139204666:
             text=message.text[9:]
             users=baz.get_users()
+
             for row in users:
+                if row[2] == None:
+                    row[2] = ''
+
                 try:
                     await  bot.send_message(row[0],text)
                     if int(row[1]) !=1 :
                         baz.set_active(row[0],1)
                     await bot.send_message(message.from_user.id,'Успешная рассылка'+' '+ str(row[0]) )
+                    print("Рассылка юзеру "+str(row[0])+" "+row[2])
                 except:
                     baz.set_active(row[0], 0)
+                    print("Юзер "+str(row[0]) +" "+row[2] +" не активен")
 
-#            await bot.send_message(message.from_user.id,'Успешная рассылка')
 
 
 if __name__ == '__main__':
