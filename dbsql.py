@@ -7,6 +7,10 @@ class Database:
         self.base = sq.connect(dbFile)
         self.cur = self.base.cursor()
 
+    def close(self):
+        self.cur.close()
+        self.base.close()
+
     def createTable(self, table):
         with self.base:
             self.cur.execute(table)

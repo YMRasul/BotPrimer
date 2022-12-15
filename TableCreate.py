@@ -7,15 +7,11 @@ def createTables(db):
         '''CREATE TABLE IF NOT EXISTS org (id INTEGER PRIMARY KEY NOT NULL, nam)'''
     ]
     try:
-        e = 1
         baza = Database(db)
-        print('Подключение к базе данных ...')
+        print('Подключение к базе данных и Создание таблиц')
         # Создание таблиц
         for tab in tables:
             baza.createTable(tab)
-    except:
-        e=0
-        print('Нет связи с базой данных ...')
-
-    return e
+    finally:
+        baza.close()
 

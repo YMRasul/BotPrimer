@@ -11,6 +11,8 @@ async def on_startup(_):
     print('Bot вышел в online ...')
 
 async def on_shutdown(_):
+    baz.close()
+    print("Отсоединение от baz...")
     print('Bot закончил работу ...')
 
 logger = logging.getLogger(__name__)
@@ -22,10 +24,9 @@ logging.basicConfig(
 logger.info("Bot запускается")
 
 
-createTables('primer.db')    # из  TableCreate.py       создание базы и таблиц
-
+createTables('primer.db')  # из  TableCreate.py       создание базы и таблиц
 baz = Database('primer.db')  # из dbsql.py
-
+print("Подключение к базе данных baz...")
 
 @dp.message_handler(commands=['start'])
 async def start(message: types.Message):
@@ -45,12 +46,11 @@ async def sendall(message: types.Message):
             for row in users:
                 if row[2] == None:
                     row[2] = ''
-
                 try:
                     await  bot.send_message(row[0],text)
                     if int(row[1]) !=1 :
                         baz.set_active(row[0],1)
-                    await bot.send_message(message.from_user.id,'Успешная рассылка'+' '+ str(row[0]) )
+                    await bot.send_message(message.from_user.id,'Рассылка'+' '+ str(row[0]) +": "+ row[2])
                     print("Рассылка юзеру "+str(row[0])+" "+row[2])
                 except:
                     baz.set_active(row[0], 0)
